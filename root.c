@@ -451,7 +451,11 @@ static int cdfs_statfs(struct super_block *sb, struct kstatfs *buf) {
 
 /************************************************************************/
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+static int cdfs_readdir(struct file *filp, struct dir_context *ctx) {
+#else
 static int cdfs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
+#endif
   struct inode *inode = filp->f_dentry->d_inode;
   int i;
   cd * this_cd = cdfs_info(inode->i_sb);
@@ -459,7 +463,11 @@ static int cdfs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
   PRINT("cdfs_readdir ino=%ld f_pos=%u\n", inode->i_ino, (int)filp->f_pos);
 
   for(i=filp->f_pos; i<T2I(this_cd->tracks); i++) {
-    if (filldir(dirent, this_cd->track[i].name, strlen(this_cd->track[i].name), 0, i, DT_UNKNOWN) < 0) 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+    if (!dir_emit(ctx, this_cd->track[i].name, strlen(this_cd->track[i].name), i, DT_UNKNOWN) < 0)
+#else
+    if (filldir(dirent, this_cd->track[i].name, strlen(this_cd->track[i].name), 0, i, DT_UNKNOWN) < 0)
+#endif
       return 0;
     filp->f_pos++;
   }
@@ -471,7 +479,11 @@ static int cdfs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
 #ifdef OLD_KERNEL
 static struct dentry * cdfs_lookup(struct inode *dir, struct dentry *dentry){
 #else
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
+static struct dentry * cdfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags){
+#else
 static struct dentry * cdfs_lookup(struct inode *dir, struct dentry *dentry, struct nameidata *nd){
+#endif
 #endif
   struct inode * inode;
   int i;
@@ -506,7 +518,11 @@ return NULL;
 
 static struct file_operations cdfs_dir_operations = {
   .read     = generic_read_dir,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)
+  .iterate  = cdfs_readdir,
+#else
   .readdir  = cdfs_readdir,
+#endif
 };
 
 static struct inode_operations cdfs_inode_operations = {
@@ -659,8 +675,12 @@ static int __init cdfs_init(void) {
   if (err < 0) return err;
 
   // register /proc entry
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0)
+  cdfs_proc_entry = proc_create_data(FSNAME, 0, NULL, &proc_cdfs_operations, NULL);
+#else
   if ((cdfs_proc_entry = create_proc_entry(FSNAME, 0, NULL )))
     cdfs_proc_entry->proc_fops = &proc_cdfs_operations;
+#endif
   cdfs_proc_cd=NULL;
 
   // start kernel thread

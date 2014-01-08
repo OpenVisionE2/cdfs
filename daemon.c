@@ -30,7 +30,11 @@
 #include "cdfs.h"
 #include <linux/sched.h>
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 int kcdfsd_pid = 0;
+#else
+struct task_struct *kcdfsd_pid = NULL;
+#endif
 static int kcdfsd_running = 0;
 static DECLARE_WAIT_QUEUE_HEAD(kcdfsd_wait);
 static LIST_HEAD(kcdfsd_req_list);       /* List of requests needing servicing */
@@ -185,7 +189,11 @@ void kcdfsd_cleanup_thread(){
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27)
   ret = kill_proc(kcdfsd_pid, SIGTERM, 1);
 #else
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
   ret = kill_pid(find_vpid(kcdfsd_pid), SIGTERM, 1);
+#else
+  ret = kill_pid(find_vpid(kcdfsd_pid->pid), SIGTERM, 1);
+#endif
 #endif
 
   if (!ret) {

@@ -194,7 +194,11 @@ int kcdfsd_add_cdhfs_request(struct file * file, struct page *page);
 int kcdfsd_add_request(struct dentry *dentry, struct page *page, unsigned type);
 int kcdfsd_thread(void *unused);
 void kcdfsd_cleanup_thread(void);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 extern int kcdfsd_pid;
+#else
+extern struct task_struct *kcdfsd_pid;
+#endif
 
 /* for discid stuff */
 unsigned long discid(cd *);

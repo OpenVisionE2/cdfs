@@ -57,6 +57,10 @@
 #include <linux/proc_fs.h>
 #include <linux/string.h>
 #include <asm/uaccess.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
+#include <linux/fs.h>
+#include <linux/uio.h>
+#endif
 
 #define CDFS_MAGIC 0xCDDA
 #define CDFS_MAXFN 128
@@ -198,6 +202,10 @@ void kcdfsd_cleanup_thread(void);
 extern int kcdfsd_pid;
 #else
 extern struct task_struct *kcdfsd_pid;
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
+ssize_t generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov, unsigned long nr_segs, loff_t pos);
 #endif
 
 /* for discid stuff */

@@ -29,6 +29,7 @@
 
 #include "cdfs.h"
 #include <linux/sched.h>
+#include <linux/wait.h>
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
 int kcdfsd_pid = 0;
@@ -175,7 +176,7 @@ int kcdfsd_thread(void *unused){
   /* Send me a signal to get me die */
   do {
     kcdfsd_process_request();
-    interruptible_sleep_on(&kcdfsd_wait);
+    wait_event_interruptible(kcdfsd_wait, !kcdfsd_running);
   } while (!signal_pending(current));
 
   kcdfsd_running = 0;

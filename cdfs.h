@@ -127,7 +127,11 @@ typedef struct _track_info {
   unsigned type;                              /* audio, data of boot */
   char name[99];
   unsigned inode;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+  time64_t time;                                /* only for data tracks */
+#else
   time_t time;                                /* only for data tracks */
+#endif
   struct iso_primary_descriptor * iso_info;   /* only for data tracks */
   int xa_data_size;                           /* only for xa data tracks */
   int xa_data_offset;                         /* only for xa data tracks */
@@ -173,7 +177,11 @@ extern struct address_space_operations cdfs_cdhfs_aops;
 
 int cdfs_toc_read(struct super_block *sb);
 int cdfs_toc_read_full(struct super_block *sb);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+time64_t cdfs_constructtime(char * time);
+#else
 time_t cdfs_constructtime(char * time);
+#endif
 unsigned cdfs_constructsize(char * size);
 void cdfs_constructMSFsize(char * result, unsigned length);
 int cdfs_ioctl(struct super_block *s, int cmd, unsigned long arg);

@@ -101,6 +101,14 @@ cdfs_release(struct inode *inode_p, struct file *file_p) {
  * CDFS high-level file operations table                                      *
  ******************************************************************************/
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+struct proc_ops proc_cdfs_operations = {
+    .proc_lseek	= seq_lseek,
+    .proc_read	= seq_read,
+    .proc_open	= cdfs_open,
+    .proc_release	= cdfs_release,
+};
+#else
 struct file_operations proc_cdfs_operations = {
     .owner	= THIS_MODULE,
     .llseek	= seq_lseek,
@@ -108,6 +116,7 @@ struct file_operations proc_cdfs_operations = {
     .open	= cdfs_open,
     .release	= cdfs_release,
 };
+#endif
 
 
 /********************************************************************/

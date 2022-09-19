@@ -28,7 +28,12 @@
 
 /* convert YYYYMMDDHHMMSS to time_t (seconds since 1/1/1970) */
 
-time_t cdfs_constructtime(char * time){
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+time64_t cdfs_constructtime(char * time)
+#else
+time_t cdfs_constructtime(char * time)
+#endif
+{
   
   unsigned year,month,day,hour,min,sec;
 
@@ -47,7 +52,11 @@ time_t cdfs_constructtime(char * time){
     min   = 10*(time[10]-'0') + (time[11]-'0');
     sec   = 10*(time[12]-'0') + (time[13]-'0');
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+    return mktime64(year, month, day, hour, min, sec);
+#else
     return mktime(year, month, day, hour, min, sec);
+#endif
   }
 }
 

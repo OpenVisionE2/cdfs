@@ -376,7 +376,11 @@ out:
 
   PRINT("retinode = %ld\n", retinode->i_ino);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,0)
+  sb->s_root   = d_make_root(retinode);
+#else
   sb->s_root   = d_alloc_root(retinode);
+#endif
 
   cdfs_proc_cd = this_cd;
 

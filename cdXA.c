@@ -38,7 +38,11 @@ struct address_space_operations cdfs_cdXA_aops = {
 /************************************************************/
 
 int kcdfsd_add_cdXA_request(struct file * file, struct page *page){
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+  return kcdfsd_add_request(file->f_path.dentry, page, CDXA_REQUEST);
+#else
   return kcdfsd_add_request(file->f_dentry, page, CDXA_REQUEST);
+#endif
 }
 
 /***********************************************************/            

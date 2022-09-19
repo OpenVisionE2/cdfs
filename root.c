@@ -456,7 +456,11 @@ static int cdfs_readdir(struct file *filp, struct dir_context *ctx) {
 #else
 static int cdfs_readdir(struct file *filp, void *dirent, filldir_t filldir) {
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+  struct inode *inode = filp->f_path.dentry->d_inode;
+#else
   struct inode *inode = filp->f_dentry->d_inode;
+#endif
   int i;
   cd * this_cd = cdfs_info(inode->i_sb);
 

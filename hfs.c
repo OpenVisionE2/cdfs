@@ -201,7 +201,12 @@ struct file_operations cdfs_cdhfs_file_operations = {
 
 
 int kcdfsd_add_cdhfs_request(struct file * file, struct page *page){
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+  return kcdfsd_add_request(file->f_path.dentry, page, CDHFS_REQUEST);
+#else
   return kcdfsd_add_request(file->f_dentry, page, CDHFS_REQUEST);
+#endif
+  
 }
 
 struct address_space_operations cdfs_cdhfs_aops = {

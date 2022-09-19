@@ -187,12 +187,20 @@ struct file_operations cdfs_cdda_file_operations = {
 
 int kcdfsd_add_cdda_request(struct file * file, struct page *page){
   PRINT("kcdfsd_add_cdda_request(%x, %x)\n", file, page);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+  return kcdfsd_add_request(file->f_path.dentry, page, CDDA_REQUEST);
+#else
   return kcdfsd_add_request(file->f_dentry, page, CDDA_REQUEST);
+#endif
 }
 
 int kcdfsd_add_cdda_raw_request(struct file * file, struct page *page){
   PRINT("kcdfsd_add_cdda_request(%x, %x)\n", file, page);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+  return kcdfsd_add_request(file->f_path.dentry, page, CDDA_RAW_REQUEST);
+#else
   return kcdfsd_add_request(file->f_dentry, page, CDDA_RAW_REQUEST);
+#endif
 }
 
 struct address_space_operations cdfs_cdda_aops = {

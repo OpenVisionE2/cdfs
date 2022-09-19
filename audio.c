@@ -166,7 +166,17 @@ void cdfs_cdda_file_read(struct inode * inode, char * buf, size_t count, unsigne
 
 /***************************************************************************/
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+ssize_t
+generic_file_readv(struct kiocb *iocb, struct iov_iter *to)
+{
+	size_t count = iov_length(to->iov, to->nr_segs);
+	struct iov_iter i;
+
+	iov_iter_init(&i, READ, to->iov, to->nr_segs, count);
+	return generic_file_read_iter(iocb, &i);
+}
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
 ssize_t
 generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 		unsigned long nr_segs, loff_t pos)
@@ -180,8 +190,12 @@ generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov,
 #endif
 
 struct file_operations cdfs_cdda_file_operations = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+    .read_iter = generic_file_readv,
+#else
     .read = do_sync_read,
     .aio_read = generic_file_aio_read,
+#endif
     .mmap = generic_file_mmap,
 };
 

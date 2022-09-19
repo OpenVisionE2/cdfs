@@ -76,8 +76,12 @@ unsigned cdfs_data_bmap(struct super_block * sb, int inode, int block){
 
 
 struct file_operations cdfs_cddata_file_operations = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+    .read_iter = generic_file_readv,
+#else
   .read = do_sync_read,
   .aio_read = generic_file_aio_read,
+#endif
 #ifdef OLD_KERNEL
   .mmap             = generic_file_mmap
 #else

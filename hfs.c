@@ -194,8 +194,12 @@ void cdfs_copy_from_cdhfs(struct super_block * sb, int inode, unsigned int start
 /***************************************************************************/
 
 struct file_operations cdfs_cdhfs_file_operations = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+    .read_iter = generic_file_readv,
+#else
   .read = do_sync_read,
   .aio_read = generic_file_aio_read,
+#endif
   .mmap             = generic_file_mmap
 };
 
@@ -206,7 +210,6 @@ int kcdfsd_add_cdhfs_request(struct file * file, struct page *page){
 #else
   return kcdfsd_add_request(file->f_dentry, page, CDHFS_REQUEST);
 #endif
-  
 }
 
 struct address_space_operations cdfs_cdhfs_aops = {

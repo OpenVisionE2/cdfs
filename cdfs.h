@@ -204,7 +204,9 @@ extern int kcdfsd_pid;
 extern struct task_struct *kcdfsd_pid;
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+ssize_t generic_file_readv(struct kiocb *iocb, struct iov_iter *to);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3,16,0)
 ssize_t generic_file_aio_read(struct kiocb *iocb, const struct iovec *iov, unsigned long nr_segs, loff_t pos);
 #endif
 

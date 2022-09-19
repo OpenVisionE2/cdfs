@@ -26,8 +26,12 @@
 #include "cdfs.h"
 
 struct file_operations cdfs_cdXA_file_operations = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0)
+    .read_iter = generic_file_readv,
+#else
     .read = do_sync_read,
     .aio_read = generic_file_aio_read,
+#endif
     .mmap = generic_file_mmap,
 };
 

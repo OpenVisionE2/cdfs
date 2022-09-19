@@ -29,6 +29,9 @@
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
 #include <linux/kthread.h>
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+#include <uapi/linux/mount.h>
+#endif
 
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*

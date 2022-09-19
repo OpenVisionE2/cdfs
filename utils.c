@@ -25,6 +25,9 @@
 
 #include "cdfs.h"
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,9,0))
+#include <linux/blkdev.h>
+#endif
 
 /* convert YYYYMMDDHHMMSS to time_t (seconds since 1/1/1970) */
 

@@ -26,6 +26,9 @@
 
 #include <linux/module.h>
 #include <linux/sched.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
+#include <linux/kthread.h>
+#endif
 
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
@@ -661,14 +664,22 @@ static int __init cdfs_init(void) {
   cdfs_proc_cd=NULL;
 
   // start kernel thread
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
   if ((kcdfsd_pid = kernel_thread(kcdfsd_thread, NULL, CLONE_FS | CLONE_FILES | CLONE_SIGHAND)) >0 ) {
     return 0;
   } else {
     printk(FSNAME" kernel_thread failed.\n");
+#else
+  kcdfsd_pid = kthread_run(kcdfsd_thread, NULL, "kcdfsd_thread");
+  if (IS_ERR(kcdfsd_pid)) {
+    printk(FSNAME" kthread_run failed.\n");
+#endif
     if (cdfs_proc_entry) remove_proc_entry(FSNAME, NULL);
     unregister_filesystem(&cdfs_fs_type);
     return -1;
   }
+
+  return 0;
 }
 
 /******************************************************************/

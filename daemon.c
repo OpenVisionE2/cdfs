@@ -157,7 +157,7 @@ int kcdfsd_thread(void *unused){
 #ifdef OLD_KERNEL
   exit_files(current);  /* daemonize doesn't do exit_files */
   daemonize();
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
   daemonize("k"FSNAME"d");
 
   /* Allow SIGTERM to quit properly when removing module */

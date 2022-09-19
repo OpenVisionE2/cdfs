@@ -44,9 +44,17 @@ static int cdfs_scsi_send_command( struct super_block *sb,
     cd_cmd.timeout = 20000;
     cd_cmd.sense = &sense;
     cd_cmd.quiet = 0;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,14,0)
+    cd_cmd.stat = SAM_STAT_GOOD;
+#else
     cd_cmd.stat = GOOD;
+#endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,14,0)
+    if ( cdfs_ioctl( sb, CDROM_SEND_PACKET, (unsigned long)&cd_cmd ) < 0 || cd_cmd.stat != SAM_STAT_GOOD )
+#else
     if ( cdfs_ioctl( sb, CDROM_SEND_PACKET, (unsigned long)&cd_cmd ) < 0 || cd_cmd.stat != GOOD )
+#endif
     {
         PRINT( "cdfs_scsi_send_command: CDROM_SEND_PACKET ioctl failed (status %d)\n", cd_cmd.stat );
         return -1;

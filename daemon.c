@@ -209,7 +209,11 @@ void kcdfsd_cleanup_thread(){
     int count = 10 * HZ;
 
     while (kcdfsd_running && --count) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,14,0)
+      __set_current_state(TASK_INTERRUPTIBLE);
+#else
       current->state = TASK_INTERRUPTIBLE;
+#endif
       schedule_timeout(1);
     }
     if (!count)

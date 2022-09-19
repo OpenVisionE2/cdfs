@@ -580,6 +580,7 @@ struct inode *cdfs_iget(struct super_block *sp, unsigned long ino) {
 
   PRINT("cdfs_iget BEFORE inode %ld\n", i->i_ino);
   cdfs_read_inode(i);
+  unlock_new_inode(i);
   PRINT("cdfs_iget AFTER inode %ld\n", i->i_ino);
   return i;
 }

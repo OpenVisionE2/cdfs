@@ -116,7 +116,7 @@ int cdfs_read_rawDATA_frame(struct super_block * sb, unsigned lba, unsigned char
   bh=cdfs_bread(sb, lba, CD_FRAMESIZE);
   if (!bh) {
     // dit gebeurt indien track1!=ISO is, bv. De Morgen CD
-    printk("cdfs_read_rawDATA(%x, %u, %x) FAILED!\n", (unsigned)sb, lba, (unsigned)buf);
+    printk("cdfs_read_rawDATA(%lx, %u, %lx) FAILED!\n", (unsigned long)sb, lba, (unsigned long)buf);
   } else {
     memcpy(buf, bh->b_data, CD_FRAMESIZE);
     brelse(bh);

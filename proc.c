@@ -262,7 +262,7 @@ cdfs_show(struct seq_file *file_p, void *data_p) {
 	if (track_p->iso_size) {
 	    seq_printf(
 		file_p,
-		"Track %2d: data track (%s), [%d-%d/%d], length=%d MB\n",
+		"Track %2ld: data track (%s), [%d-%d/%d], length=%d MB\n",
 		TRACK_POINTER_TO_TRACK_NUMBER(track_p),
 		track_p->name,
 		track_p->start_lba,
@@ -313,7 +313,7 @@ cdfs_show(struct seq_file *file_p, void *data_p) {
 	} else {
 	    seq_printf(
 		file_p,
-		"Track %2d: data track (%s), [%d-%d], length=%d kB\n",
+		"Track %2ld: data track (%s), [%d-%d], length=%d kB\n",
 		TRACK_POINTER_TO_TRACK_NUMBER(track_p),
 		track_p->name,
 		track_p->start_lba,
@@ -362,7 +362,7 @@ cdfs_show(struct seq_file *file_p, void *data_p) {
 	cdfs_constructMSFsize(MSFsize, track_p->size);
 	seq_printf(
 	    file_p,
-	    "Track %2d: audio track (%s), [%8d -%8d], length=%s\n",
+	    "Track %2ld: audio track (%s), [%8d -%8d], length=%s\n",
 	    TRACK_POINTER_TO_TRACK_NUMBER(track_p),
 	    track_p->name,
 	    track_p->start_lba,

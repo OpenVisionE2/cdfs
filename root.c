@@ -518,7 +518,11 @@ static void cdfs_read_inode(struct inode *i) {
   
   i->i_uid        = this_cd->uid;
   i->i_gid        = this_cd->gid;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,2,0)
+  set_nlink(i, 1);
+#else
   i->i_nlink      = 1;
+#endif
   i->i_op         = &cdfs_inode_operations;
   i->i_fop        = NULL;
   i->i_data.a_ops = NULL;

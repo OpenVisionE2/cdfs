@@ -278,7 +278,11 @@ static int cdfs_fill_super(struct super_block *sb, void *data, int silent){
 	no_audio++;
 	this_cd->track[i].iso_info    = NULL;
 	this_cd->track[i].type        = AUDIO;
-	this_cd->track[i].time        = get_seconds();
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,11,0)
+        this_cd->track[i].time        = get_seconds();
+#else
+        this_cd->track[i].time        = ktime_get_real_seconds();
+#endif
 	this_cd->track[i].iso_size    = 0;
 	this_cd->track[i].track_size  = this_cd->track[i].track_size * CD_FRAMESIZE_RAW + ((this_cd->raw_audio==0)?WAV_HEADER_SIZE:0);
 	this_cd->track[i].size        = this_cd->track[i].track_size;

@@ -156,7 +156,11 @@ int cdfs_toc_read_full( struct super_block *sb )
 	    {
 	        /* This is a true track descriptor */
 		this_cd->track[cur_track].type = ( track->adr_control & 0x04 ) ? DATA : AUDIO;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,11,0)
 		this_cd->track[cur_track].time = get_seconds();
+#else
+		this_cd->track[cur_track].time = ktime_get_real_seconds();
+#endif
 		this_cd->track[cur_track].start_lba = TIME2LBA( track->pmin, track->psec, track->pframe ) - 150;
 		this_cd->track[cur_track-1].stop_lba = this_cd->track[cur_track].start_lba - 1;
                 PRINT("Start[%d]: %d\n", cur_track, this_cd->track[cur_track].start_lba);
@@ -217,7 +221,11 @@ int cdfs_toc_read( struct super_block *sb )
         if ( t != this_cd->tracks )	/* all tracks but the LEADOUT */
 	{
             this_cd->track[i].type = ( entry.cdte_ctrl & CDROM_DATA_TRACK ) ? DATA : AUDIO;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,11,0)
             this_cd->track[i].time = get_seconds();
+#else
+            this_cd->track[i].time = ktime_get_real_seconds();
+#endif
         }
     }
 
